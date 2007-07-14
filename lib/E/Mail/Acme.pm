@@ -586,7 +586,7 @@ which program to use by passing it as an argument:
 =head1 THANKS
 
 Thanks to Simon, Simon, Casey, Richard, Dave, Dieter, Meng, Mark, Graham, Tim,
-Yves, David, Eryq and everyone else who has helped form my understand of how
+Yves, David, Eryq and everyone else who has helped form my understanding of how
 e-mail should be handled.
 
 =head1 AUTHOR
