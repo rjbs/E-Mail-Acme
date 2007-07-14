@@ -1,20 +1,20 @@
 
-use Test::More tests => 23;
+use Test::More tests => 22;
 use E'Mail::Acme;#'
 
-my $email = E'Mail::Acme;#'
+my $e_mail = E'Mail::Acme;#'
 
-isa_ok($email, "E'Mail::Acme");
+isa_ok($e_mail, "E'Mail::Acme");
 
-$email->{Received} = [
+$e_mail->{Received} = [
   q/from sir-mx-a-lot.example.com by salt-n-pep-l.perl4.museum; Thu, 12 Jul 2007 02:09:46 -0400 (EDT)/,
   q/from mr-bad.example.com by sir-mx-a-lot.example.com; Thu, 12 Jul 2007 01:01:13 -0400 (EDT)/,
 ];
 
-$email->{From}     = q<rjbs@example.com>;
-$email->{To}       = q'The PEP (Perl Email Project) List <pep-l@perl.xxx>';
+$e_mail->{From}     = q<rjbs@example.com>;
+$e_mail->{To}       = q'The PEP (Perl Email Project) List <pep-l@perl.xxx>';
 
-push @$email,
+push @$e_mail,
   "Dear PEP Suckers,",
   "",
   "Somebody should write a SIMPLE Email::Simple replacement.",
@@ -25,9 +25,9 @@ push @$email,
   "rjbs"
 ;
 
-splice @$email, 7, 0, "your former leader";
+splice @$e_mail, 7, 0, "your former leader";
 
-$email->[8] = "ricardo\nsignes";
+$e_mail->[8] = "ricardo\nsignes";
 
 my $expected_header = <<'END_STRING';
 Received: from sir-mx-a-lot.example.com by salt-n-pep-l.perl4.museum; Thu, 12 Jul 2007 02:09:46 -0400 (EDT)
@@ -55,22 +55,17 @@ $expected_body   =~ s/\n/\x0d\x0a/g;
 my $expected = "$expected_header\x0d\x0a$expected_body";
 
 is(
-  "" . $email,
+  "" . $e_mail,
   $expected,
   "message stringifies properly",
 );
 
-is(
-  $email->{''},
-  $expected_header,
-);
-
 {
-  my $email = E'Mail::Acme;#'
+  my $e_mail = E'Mail::Acme;#'
   
-  $email->{From} = q(sadist@marquis.sad);
+  $e_mail->{From} = q(sadist@marquis.sad);
 
-  my $field = $email->{From};
+  my $field = $e_mail->{From};
   
   is($field, 'From: sadist@marquis.sad' . "\x0d\x0a", "header stringifies");
 
@@ -164,41 +159,45 @@ is(
     "2nd value is undef",
   );
   
-  @$email = "Hey, dude.\nWhat's up?";
+  @$e_mail = "Hey, dude.\nWhat's up?";
 
   is_deeply(
-    [ @$email ],
+    [ @$e_mail ],
     [ "Hey, dude.", "What's up?" ],
     "direct assignment to lines",
   );
 
-  push @$email, "-- \nrjbs\n";
+  push @$e_mail, "-- \nrjbs\n";
 
   is_deeply(
-    [ @$email ],
+    [ @$e_mail ],
     [ "Hey, dude.", "What's up?", "-- ", "rjbs" ],
     "then pushed real good",
   );
 
-  is($email->[-1], "rjbs", "last line is correct");
+  is($e_mail->[-1], "rjbs", "last line is correct");
 
-  # print $email "manager, e-mail enterprises";
-  # is($email->[-1], "manager, e-mail enterprises", "print to push");
+  # print $e_mail "manager, e-mail enterprises";
+  # is($e_mail->[-1], "manager, e-mail enterprises", "print to push");
 
-  is_deeply($email->[ @$email ], [], "message is single-part");
+  is_deeply($e_mail->[ @$e_mail ], [], "message is single-part");
 
   my $part = E'Mail::Acme;#'
   $part->{'content-type'} = "text/plain";
   push @$part, "This is plain text.";
 
-  push @$email, $part;
+  push @$e_mail, $part;
 
-  is_deeply($email->[ @$email ], [ $part ], "message subparts are ok");
+  is_deeply($e_mail->[ @$e_mail ], [ $part ], "message subparts are ok");
 }
 
-# use Data::Dumper;
-# diag Dumper($email->()->('header'));
-# diag Dumper("" . $email->()->('header')->{received});
-# diag Dumper(scalar $email->()->('header')->{received});
-# diag Dumper($email->()->('header')->{received});
+{
+  $e_mail = E'Mail::Acme;#'
+  $e_mail->{to}   = q<dest@example.org>;
+  $e_mail->{from} = q<sender@example.com>;
+
+  push @$e_mail, "final test", "what's up", "-- ", "sender";
+
+  $e_mail->();
+}
 

@@ -3,149 +3,9 @@ use warnings;
 
 package E'Mail::Acme;
 
-=head1 NAME
+$E'Mail::Acme::VERSION = 822;
 
-E'Mail::Acme - the epitome of simple e-mail handling
-
-=head1 VERSION
-
-version 822
-
-=cut
-
-our $VERSION = 822;
-
-=head1 SYNOPSIS
-
-  my $e_mail = E'Mail::Acme;
-
-  $e_mail->{From} = q<Ricardo SIGNES <rjbs@acme.example.biz>>;
-  $e_mail->{To  } = q<Alvin Theodore <monk@chip.shoulder.dw>>;
-
-  $e_mail->{Subject} = 'Finally, a simple e-mail module!';
-
-  push @$e_mail,
-    'Alvin,',
-    '',
-    'I agree!  What the world needs is a module that makes e-mail more',
-    'accessible to the common man -- or at least the common Perl programmer.',
-    '',
-    'I have attached a modest example.',
-  ;
-
-  $e_mail->('sendmail');
-
-=head1 DESCRIPTION
-
-Good grief, everywhere you turn there's yet another e-mail module!  This one
-says that the message is an object.  That one says that every I<field> is an
-object.  Then there's the one that says the darn B<body> is an object!
-
-How many methods do I need to learn, anyway?  Look, an e-mail is simple.  It's
-a set of name/value pairs forming a header and a list of lines.  That's it!
-Anybody who tells you otherwise is just being a nervous Nelly.
-
-Acme::E'mail is the epitome of simple e-mail handling.  It does use an object,
-but only to help produce a synergistic, cohesive unity of purpose.  It uses
-I<just> the familiar, existing Perl data system so that you only need use the
-Perl you already know -- none of this overwrought API that we've all gotten so
-sick of.
-
-=head1 METHODS
-
-None.
-
-=head1 CONSTRUCTION
-
-Making a new e-mail is easy:
-
-  my $e_mail = E'Mail::Acme;
-
-=head1 HEADERS
-
-Setting headers is easy:
-
-  $e_mail->{header} = "First Value";
-  $e_mail->{HeadEr} = "Second Value";
-
-  print $e_mail->{header};
-  # header: First Value
-  # HeadeR: Second Value
-
-You can also assign multiple values at once:
-
-  $e_mail->{XForce} = [ qw(Lethal Aggressive) ];
-
-  print $e_mail->{XForce};
-  # X-Force: Lethal
-  # X-Force: Aggressive
-
-To clear all of those headers, you can just:
-
-  delete $e_mail->{xforce};
-
-Or, to delete just the first, either of these will work:
-
-  delete $e_mail->{XForce}[0];
-
-  splice @{ $e_mail->{XForce} }, 0, 1;
-
-Alternately, more values could be added in a similar fashion:
-
-  push @{ $e_mail->{XForce} }, 'except on Sundays';
-  
-  splice @{ $e_mail->{XForce} }, 1, 0, 'and';
-
-Of course, individual header values can be passed around and used to affect the
-original message:
-
-  my $recipients = $e_mail->{to};
-
-  munge_values($recipients); # the $e_mail is altered
-
-This frees you from passing around a large clunky message "object" when you
-only need to deal with part of it.
-
-=head1 THE BODY
-
-The body is just a sequence of lines, and you can treat it as such:
-
-  @$e_mail = "Friends, Romans, Countrymen:"
-          , ''
-          , 'Lend me your ears!';
-
-You can always easily add your sig to a message:
-
-  my $sig = "-- \nrjbs\n";
-
-  push @$e_mail, $sig;
-
-E'Mail::Acme will take care of all the conversion of newlines, breaking up text
-on all likely newlines and normalizing to CRLF.
-
-=head1 MULTIPART
-
-Multipart messages are easy:  just push more e-mails onto the body.
-
-  my $e_mail = E'Mail::Acme; # top part;
-  my $part_1 = E'Mail::Acme; # top part;
-  my $part_2 = E'Mail::Acme; # top part;
-
-  push @$e_mail, $part_1, $part_2;
-
-Any lines in a multi-part email message form the preamble, and an arrayref of
-subparts is always available at the end of the e-mail -- that is, like this:
-
-  my $subparts = $e_mail->[ scalar @$email ];
-
-Nested multipart messages are handled just fine.  A multipart content-type will
-be added, if none has been supplied.  If a multipart content-type is set, but
-the boundary is not, it will be added.  Do not set your own boundary unless you
-know what you are doing!  You will probably produce a corrupt message!
-
-=cut
-
-our $CRLF = "\x0d\x0a";
+my $CRLF = "\x0d\x0a";
 
 use overload '""' => sub {
   my ($self) = @_;
@@ -177,7 +37,27 @@ use overload '""' => sub {
   );
 };
 
-use overload '&{}' => sub { *{$_[0]}{CODE} };
+use overload '&{}' => sub {
+  my ($self) = @_;
+  sub {
+    my ($program) =  @_;
+    $program = 'sendmail' unless defined $program and length $program;
+
+    if ($program !~ m{[/\\]}) {
+      path: for my $dir (split /:/, $ENV{PATH}) {
+        if ( -x "$dir/program" ) {
+          $program = "$dir/program";
+          last path;
+        }
+      }
+    }
+
+    open  $self, "| $program -t -oi -f $self->{from}->[0]" or die;
+    print $self $self or die;
+    close $self  or die;
+  }
+};
+
 use overload '@{}' => sub {
   tie @{*{$_[0]}}, q<E'Mail::Acme::Body> unless @{*{$_[0]}};#'
   return \@{*{$_[0]}};
@@ -388,10 +268,6 @@ use overload fallback => 1;
     bless [ $name, $gutter ] => $class;
   }
 
-  sub FETCH {
-    ""
-  }
-
   sub _str_first {
     my ($self) = @_;
 
@@ -553,11 +429,165 @@ use overload fallback => 1;
   }
 }
 
+E'Mail::Acme;#'
+
+__END__
+
+=head1 NAME
+
+E'Mail::Acme - the epitome of simple e-mail handling
+
+=head1 VERSION
+
+version 822
+
+=head1 SYNOPSIS
+
+  my $e_mail = E'Mail::Acme;
+
+  $e_mail->{From} = q<Ricardo SIGNES <rjbs@acme.example.biz>>;
+  $e_mail->{To  } = q<Alvin Theodore <monk@chip.shoulder.dw>>;
+
+  $e_mail->{Subject} = 'Finally, a simple e-mail module!';
+
+  push @$e_mail,
+    'Alvin,',
+    '',
+    'I agree!  What the world needs is a module that makes e-mail more',
+    'accessible to the common man -- or at least the common Perl programmer.',
+    '',
+    'I have attached a modest example.',
+  ;
+
+  $e_mail->('sendmail');
+
+=head1 DESCRIPTION
+
+Good grief, everywhere you turn there's yet another e-mail module!  This one
+says that the message is an object.  That one says that every I<field> is an
+object.  Then there's the one that says the darn B<body> is an object!
+
+How many methods do I need to learn, anyway?  Look, an e-mail is simple.  It's
+a set of name/value pairs forming a header and a list of lines.  That's it!
+Anybody who tells you otherwise is just being a nervous Nelly.
+
+E'Mail::Acme is the epitome of simple e-mail handling.  It does use an object,
+but only to help produce a synergistic, cohesive unity of purpose.  It uses
+I<just> the familiar, existing Perl data system so that you only need use the
+Perl you already know -- none of this overwrought API that we've all gotten so
+sick of.
+
+=head1 METHODS
+
+None.
+
+=head1 CONSTRUCTION
+
+Making a new e-mail is easy:
+
+  my $e_mail = E'Mail::Acme;
+
+=head1 HEADERS
+
+Setting headers is easy:
+
+  $e_mail->{header} = "First Value";
+  $e_mail->{HeadEr} = "Second Value";
+
+  print $e_mail->{header};
+  # header: First Value
+  # HeadeR: Second Value
+
+You can also assign multiple values at once:
+
+  $e_mail->{XForce} = [ qw(Lethal Aggressive) ];
+
+  print $e_mail->{XForce};
+  # X-Force: Lethal
+  # X-Force: Aggressive
+
+To clear all of those headers, you can just:
+
+  delete $e_mail->{xforce};
+
+Or, to delete just the first, either of these will work:
+
+  delete $e_mail->{XForce}[0];
+
+  splice @{ $e_mail->{XForce} }, 0, 1;
+
+Alternately, more values could be added in a similar fashion:
+
+  push @{ $e_mail->{XForce} }, 'except on Sundays';
+  
+  splice @{ $e_mail->{XForce} }, 1, 0, 'and';
+
+Of course, individual header values can be passed around and used to affect the
+original message:
+
+  my $recipients = $e_mail->{to};
+
+  munge_values($recipients); # the $e_mail is altered
+
+This frees you from passing around a large clunky message "object" when you
+only need to deal with part of it.
+
+=head1 THE BODY
+
+The body is just a sequence of lines, and you can treat it as such:
+
+  @$e_mail = "Friends, Romans, Countrymen:"
+          , ''
+          , 'Lend me your ears!';
+
+You can always easily add your sig to a message:
+
+  my $sig = "-- \nrjbs\n";
+
+  push @$e_mail, $sig;
+
+E'Mail::Acme will take care of all the conversion of newlines, breaking up text
+on all likely newlines and normalizing to CRLF.
+
+=head1 MULTIPART
+
+Multipart messages are easy:  just push more e-mails onto the body.
+
+  my $e_mail = E'Mail::Acme; # top part;
+  my $part_1 = E'Mail::Acme; # attachment
+  my $part_2 = E'Mail::Acme; # attachment
+
+  push @$e_mail, $part_1, $part_2;
+
+Any lines in a multi-part e-mail message form the preamble, and an arrayref of
+subparts is always available at the end of the e-mail -- that is, like this:
+
+  my $subparts = $e_mail->[ scalar @$e_mail ];
+
+Nested multipart messages are handled just fine.  A multipart content-type will
+be added, if none has been supplied.  If a multipart content-type is set, but
+the boundary is not, it will be added.  Do not set your own boundary unless you
+know what you are doing!  You will probably produce a corrupt message!
+
+=head1 SENDING MAIL
+
+A mail exists to be sent, not hoarded!  Once you've composed your e-mail
+message, you can send it just how you'd expect:
+
+  $e_mail->();
+
+If your F<sendmail> program is not installed in your path, you can specify
+which program to use by passing it as an argument:
+
+  $e_mail->(q(c:/program files/sendmail/sendmail.exe));
+
+=cut
+
 =head1 THANKS
 
-Thanks to Simon, Simon, Casey, Richard, Dave, Dieter, Mark, Graham, Tim, Yves,
-and everyone else who has helped form my understand of how email should be
-handled.
+Thanks to Simon, Simon, Casey, Richard, Dave, Dieter, Meng, Mark, Graham, Tim,
+Yves, David, Eryq and everyone else who has helped form my understand of how
+e-mail should be handled.
 
 =head1 AUTHOR
 
@@ -569,5 +599,3 @@ This code is copyright (c) 2007, Ricardo SIGNES.  It is free software,
 available under the same terms as Perl itself.
 
 =cut
-
-1;
