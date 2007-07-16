@@ -1,6 +1,9 @@
-Revision history for Acme-Lingua-EN-Inflect-Modern
+Revision history for E'Mail-Acme
 
-1123    2007-07-??
+????    2007-07-??
+        update manifest to include t/send.t, duh
+
+1123    2007-07-16
         improve tests
         documentation tweaks
 

@@ -2,7 +2,7 @@ NAME
     E'Mail::Acme - the epitome of simple e-mail handling
 
 VERSION
-    version 822
+    version 1123
 
 SYNOPSIS
       my $e_mail = E'Mail::Acme;

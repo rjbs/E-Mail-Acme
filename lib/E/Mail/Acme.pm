@@ -1,5 +1,5 @@
 use strict;
-use warnings;
+## no critic warnings # let's be 5.00x compatible
 
 package E'Mail::Acme;
 
@@ -439,7 +439,7 @@ E'Mail::Acme - the epitome of simple e-mail handling
 
 =head1 VERSION
 
-version 822
+version 1123
 
 =head1 SYNOPSIS
 

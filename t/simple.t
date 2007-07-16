@@ -190,14 +190,3 @@ is(
 
   is_deeply($e_mail->[ @$e_mail ], [ $part ], "message subparts are ok");
 }
-
-# {
-#   $e_mail = E'Mail::Acme;#'
-#   $e_mail->{to}   = q<dest@example.org>;
-#   $e_mail->{from} = q<sender@example.com>;
-# 
-#   push @$e_mail, "final test", "what's up", "-- ", "sender";
-# 
-#   $e_mail->();
-# }
-
