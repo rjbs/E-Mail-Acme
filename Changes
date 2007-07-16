@@ -1,5 +1,9 @@
 Revision history for Acme-Lingua-EN-Inflect-Modern
 
+1123    2007-07-??
+        improve tests
+        documentation tweaks
+
 822     2007-07-13
         first release; CPAN rejoices
 

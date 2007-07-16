@@ -3,7 +3,7 @@ use warnings;
 
 package E'Mail::Acme;
 
-$E'Mail::Acme::VERSION = 822;
+$E'Mail::Acme::VERSION = 1123;
 
 my $CRLF = "\x0d\x0a";
 
