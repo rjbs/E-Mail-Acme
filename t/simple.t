@@ -1,5 +1,5 @@
 
-use Test::More tests => 22;
+use Test::More tests => 24;
 use E'Mail::Acme;#'
 
 my $e_mail = E'Mail::Acme;#'
@@ -189,4 +189,38 @@ is(
   push @$e_mail, $part;
 
   is_deeply($e_mail->[ @$e_mail ], [ $part ], "message subparts are ok");
+}
+
+{
+  $e_mail = E'Mail::Acme;#'
+
+  $foo = $e_mail->{foo} = [ 1, 2, 3, 4 ];
+
+  is_deeply(
+    [ @{ $e_mail->{foo} } ],
+    [ 1, 2, 3, 4 ],
+    "simple set/get headers",
+  );
+
+  splice @$foo, 1, 2, 5;
+
+  is_deeply(
+    [ @{ $e_mail->{foo} } ],
+    [ 1, 5, 4 ],
+    "splice the middle",
+  );
+}
+
+{
+  $e_mail = E'Mail::Acme;#'
+
+  $foo = $e_mail->{bar};
+
+  @$foo = ( 1, 2, 3, 4 );
+
+  is_deeply(
+    [ @{ $e_mail->{bar} } ],
+    [ 1, 2, 3, 4 ],
+    "simple set/get headers",
+  );
 }

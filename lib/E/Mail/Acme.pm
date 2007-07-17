@@ -116,11 +116,18 @@ use overload fallback => 1;
     $self->SPLICE($idx, 1);
   }
 
+  sub CLEAR {
+    my ($self) = @_;
+    $self->SPLICE(0, $self->FETCHSIZE);
+  }
+
+  sub EXTEND { }
+
   sub SPLICE {
     my ($self, $idx, $length, @new) = @_;
 
     if ($idx >= $self->FETCHSIZE) {
-      return $self->push(@new);
+      return $self->PUSH(@new);
     }
 
     my $gut = $self->_idx(1)->();
@@ -328,6 +335,15 @@ use overload fallback => 1;
       $key,
       sub { $self->{hdr} }
     ;
+  }
+
+  sub EXISTS {
+    my ($self, $key) = @_;
+
+    i: for (my $i = 0; $i < $#{$self->{hdr}}; $i += 2) {
+      return 1 if lc $self->{hdr}[$i] eq lc $key;
+    }
+    return;
   }
 
   sub STORE {
