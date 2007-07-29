@@ -1,4 +1,5 @@
 
+use strict;
 use Test::More tests => 25;
 use E'Mail::Acme;#'
 
@@ -197,7 +198,7 @@ is(
 {
   $e_mail = E'Mail::Acme;#'
 
-  $foo = $e_mail->{foo} = [ 1, 2, 3, 4 ];
+  my $foo = $e_mail->{foo} = [ 1, 2, 3, 4 ];
 
   is_deeply(
     [ @{ $e_mail->{foo} } ],
@@ -217,7 +218,7 @@ is(
 {
   $e_mail = E'Mail::Acme;#'
 
-  $foo = $e_mail->{bar};
+  my $foo = $e_mail->{bar};
 
   @$foo = ( 1, 2, 3, 4 );
 

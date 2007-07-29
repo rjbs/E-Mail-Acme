@@ -32,7 +32,8 @@ sub get_body {
 
   my $whole = "$e_mail";
   my $head  = $e_mail->{''};
-  $whole =~ s/\A$head\x0d\x0a//;
+
+  $whole =~ s/\A\Q$head\E\x0d\x0a//;
   
   return $whole;
 }
@@ -72,6 +73,16 @@ abstract wrapper that converts between all seamlessly.  This is an adapter
 class to let Email::Abstract work with E'Mail::Acme.
 
 =head1 METHODS
+
+=head2 as_string
+
+=head2 get_body
+
+=head2 get_header
+
+=head2 set_body
+
+=head2 set_header
 
 See L<Email::Abstract>
 
