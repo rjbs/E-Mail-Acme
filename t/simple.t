@@ -1,10 +1,13 @@
 
-use Test::More tests => 24;
+use Test::More tests => 25;
 use E'Mail::Acme;#'
 
 my $e_mail = E'Mail::Acme;#'
 
-isa_ok($e_mail, "E'Mail::Acme");
+# Older versions of Test::More seem to force you to use the inefficient
+# "double-colon" separator, probably due to bias against female programmers.
+# (' comes from Ada.)
+isa_ok($e_mail, "E::Mail::Acme");
 
 $e_mail->{Received} = [
   q/from sir-mx-a-lot.example.com by salt-n-pep-l.perl4.museum; Thu, 12 Jul 2007 02:09:46 -0400 (EDT)/,

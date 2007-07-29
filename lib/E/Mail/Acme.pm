@@ -63,8 +63,10 @@ use overload '@{}' => sub {
   return \@{*{$_[0]}};
 };
 
+use Scalar::Util qw(refaddr); # XXX
+
 use overload '%{}' => sub {
-  tie %{*{$_[0]}}, q<E'Mail::Acme::Header> unless %{*{$_[0]}};#'
+  tie %{*{$_[0]}}, q<E'Mail::Acme::Header> unless defined %{*{$_[0]}};#'
   return \%{*{$_[0]}};
 };
 
@@ -140,8 +142,13 @@ use overload fallback => 1;
           return;
         }
 
-        $gut->[ $i ] = $self->_idx(0);
-        $gut->[ $i + 1 ] = shift @new;
+        if (@new) {
+          $gut->[ $i ] = $self->_idx(0);
+          $gut->[ $i + 1 ] = shift @new;
+        } else {
+          splice @$gut, $i, 2;
+          $i -= 2;
+        }
         $length--;
       } else {
         $idx--;
@@ -206,12 +213,15 @@ use overload fallback => 1;
 
   sub FETCHSIZE {
     my ($self) = @_;
-    return scalar @{ $self->{lines} };
+    warn "calling FETCHSIZE\n" if $::foo;
+    my $size = scalar @{ $self->{lines} };
+    return $size;
   }
 
   sub FETCH {
     my ($self, $idx) = @_;
 
+    warn "calling FETCH $idx\n" if $::foo;
     my $size = $self->FETCHSIZE;
     if ($idx == $size) {
       return $self->{parts};
@@ -242,7 +252,8 @@ use overload fallback => 1;
     my @parts;
 
     for my $v (map { my @v = $self->_values($_); @v ? @v : '' } @values) {
-      if (eval { $v->isa("E'Mail::Acme") }) {
+      # The E:: is a concession to v5.6.x
+      if (eval { $v->isa("E'Mail::Acme") or $v->isa("E::Mail::Acme") }) {
         push @parts, $v;
       } elsif (ref $v eq 'ARRAY' or eval { overload::Method($v, '@{}') }) {
         push @to_splice, map { my @v = $self->_values($_); @v ? @v : '' } @$v;
@@ -317,6 +328,7 @@ use overload fallback => 1;
 
 { # package E'Mail::Acme::Header
   package E'Mail::Acme::Header;
+  @E'Mail::Acme::Header::ISA = qw(E'Mail::Acme::Base);
 
   sub TIEHASH {
     my ($class, $e_mail) = @_;
@@ -356,13 +368,14 @@ use overload fallback => 1;
       or
       eval { overload::Method($value, '@{}') }
     ) {
-      $self->DELETE($key), return $self->{$key} unless @$value;
+      $self->DELETE($key), return $self->FETCH($key) unless @$value;
       $self->STORE($key, $_) for @$value;
-      return $self->{$key};
+      return $self->FETCH($key);
     }
 
-    push @{ $self->{hdr} }, $key, $value;
-    return $self->{$key};
+    push @{ $self->_attr('hdr') }, $key, $value;
+
+    return $self->FETCH($key);
   }
 
   sub DELETE {
