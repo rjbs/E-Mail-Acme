@@ -3,7 +3,7 @@ use strict;
 
 package Email::Abstract::EMailAcme;
 
-$Email::Abstract::EMailAcme::VERSION = 1349;
+$Email::Abstract::EMailAcme::VERSION = 1505;
 
 sub target { "E::Mail::Acme" }
 
@@ -49,7 +49,7 @@ sub as_string {
   "$e_mail";
 }
 
-E'Mail::Acme;#'
+'200-sorry';
 
 __END__
 
