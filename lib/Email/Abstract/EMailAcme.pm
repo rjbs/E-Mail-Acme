@@ -3,7 +3,7 @@ use strict;
 
 package Email::Abstract::EMailAcme;
 
-$Email::Abstract::EMailAcme::VERSION = 1505;
+$Email::Abstract::EMailAcme::VERSION = 1555;
 
 sub target { "E::Mail::Acme" }
 
@@ -59,7 +59,7 @@ Email::Abstract::EMailAcme - pose as a more convoluted representation of e-mail
 
 =head1 VERSION
 
-version 1349
+version 1555
 
 =head1 SYNOPSIS
 

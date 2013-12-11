@@ -3,7 +3,7 @@ use strict;
 
 package E'Mail::Acme;
 
-$E'Mail::Acme::VERSION = 1505;
+$E'Mail::Acme::VERSION = 1555;
 
 my $CRLF = "\x0d\x0a";
 
@@ -468,7 +468,7 @@ E'Mail::Acme - the epitome of simple e-mail handling
 
 =head1 VERSION
 
-version 1123
+version 1555
 
 =head1 SYNOPSIS
 
