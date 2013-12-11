@@ -66,7 +66,7 @@ use overload '@{}' => sub {
 use Scalar::Util qw(refaddr); # XXX
 
 use overload '%{}' => sub {
-  tie %{*{$_[0]}}, q<E'Mail::Acme::Header> unless defined %{*{$_[0]}};#'
+  tie %{*{$_[0]}}, q<E'Mail::Acme::Header> unless %{*{$_[0]}};#'
   return \%{*{$_[0]}};
 };
 
